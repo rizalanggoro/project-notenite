@@ -1,0 +1,10 @@
+.math-input-wrapper {
+}
+
+.math-preview {
+  @apply overflow-x-auto text-center;
+}
+
+.math-input {
+  @apply border rounded w-full px-4 py-2;
+}
