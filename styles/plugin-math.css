@@ -1,0 +1,7 @@
+.plugin-formula-preview {
+  @apply text-center overflow-x-auto border rounded;
+}
+
+.plugin-formula-input {
+  @apply rounded border w-full px-4 py-2 outline-none focus:border-lime-500 duration-300;
+}

@@ -1,17 +1,16 @@
 "use client";
 
+import ToolFormula from "@/utils/plugins/formula/index";
+import ToolCode from "@editorjs/code";
 import EditorJS from "@editorjs/editorjs";
-import { useEffect, useRef } from "react";
+import ToolHeader from "@editorjs/header";
 import ToolList from "@editorjs/list";
 import ToolNestedList from "@editorjs/nested-list";
-import ToolHeader from "@editorjs/header";
-import ToolCode from "@editorjs/code";
-import ToolMath from "editorjs-latex";
-import Script from "next/script";
+import { useEffect, useRef } from "react";
 
 // import katex
+import "@/styles/plugin-math.css";
 import "katex/dist/katex.min.css";
-import "@/styles/tool-math.css";
 
 export default function ComponentEditorJS({
   data,
@@ -51,8 +50,8 @@ export default function ComponentEditorJS({
           code: {
             class: ToolCode,
           },
-          math: {
-            class: ToolMath,
+          formula: {
+            class: ToolFormula,
           },
         },
       });
@@ -68,18 +67,9 @@ export default function ComponentEditorJS({
 
   return (
     <>
-      {/* mathjax script */}
-      <Script src="https://polyfill.io/v3/polyfill.min.js?features=es6" />
-      <Script
-        async
-        id="MathJax-script"
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-      />
-
-      <div
-        id={holder}
-        className="prose prose-lg prose-lime max-w-[1024px] mx-auto"
-      ></div>
+      <div className="prose prose-lg max-w-[1024px] mx-auto">
+        <div id={holder} className="w-full"></div>
+      </div>
     </>
   );
 }
