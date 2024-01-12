@@ -1,20 +1,20 @@
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus } from "lucide-react";
-import Link from "next/link";
+import { repositorySession } from "@/lib/data/repositories/session";
+import { redirect } from "next/navigation";
+import CreateNewPost from "./create-new-post";
+import ListAllPosts from "./list-all-post";
 
-export default function Page() {
+export default async function Page() {
+  const session = await repositorySession.read();
+
+  if (!session) return redirect("/authentication");
+
   return (
     <>
       <div className="my-8">
         <div className="flex items-center justify-between">
           <p className="font-bold text-3xl">My Posts</p>
-          <Button asChild>
-            <Link href={"/dashboard/posts/create"}>
-              <Plus className="w-4 h-4 mr-2" />
-              Create
-            </Link>
-          </Button>
+          <CreateNewPost session={session} />
         </div>
 
         <Tabs defaultValue="all" className="mt-4">
@@ -24,7 +24,7 @@ export default function Page() {
             <TabsTrigger value="private">Private</TabsTrigger>
           </TabsList>
           <TabsContent value="all">
-            Make changes to your account here.
+            <ListAllPosts session={session} />
           </TabsContent>
           <TabsContent value="public">Change your password here.</TabsContent>
           <TabsContent value="private">Change your password here.</TabsContent>

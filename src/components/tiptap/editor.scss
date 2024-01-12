@@ -1,0 +1,10 @@
+.tiptap-editor {
+  .tiptap-editor-table {
+    @apply border-collapse table-fixed w-full;
+
+    .tiptap-editor-table-header,
+    .tiptap-editor-table-cell {
+      @apply border-2 px-4;
+    }
+  }
+}

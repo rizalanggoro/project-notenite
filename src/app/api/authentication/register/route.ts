@@ -12,7 +12,7 @@ export async function POST(request: Request) {
         query: [{ email }],
       },
     });
-    if (!queryResponse) throw { code: FailureTypes.Server } as Failure;
+    if (!queryResponse.ok) throw { code: FailureTypes.Server } as Failure;
     const queryJson = await queryResponse.json();
     if ((queryJson.items as Array<any>).length > 0)
       throw {
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
         item: newUser,
       },
     });
-    if (!insertResponse) throw { code: FailureTypes.Server } as Failure;
+    if (!insertResponse.ok) throw { code: FailureTypes.Server } as Failure;
 
     return new Response("OK");
   } catch (e) {

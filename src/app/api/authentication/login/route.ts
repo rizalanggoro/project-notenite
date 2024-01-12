@@ -14,7 +14,7 @@ export async function POST(request: Request) {
         limit: 1,
       },
     });
-    if (!queryResponse) throw { code: FailureTypes.Server } as Failure;
+    if (!queryResponse.ok) throw { code: FailureTypes.Server } as Failure;
     const { items }: { items: Array<any> } = await queryResponse.json();
     if (items.length == 0)
       throw {

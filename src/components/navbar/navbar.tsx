@@ -1,6 +1,7 @@
 import { repositorySession } from "@/lib/data/repositories/session";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import ComponentNavbarAccent from "./accent";
 import ComponentNavbarToggleTheme from "./toggle-theme";
 
 type MenuItem = {
@@ -20,10 +21,13 @@ export default async function ComponentNavbar() {
 
   return (
     <>
-      <div className="border-b h-16">
+      <ComponentNavbarAccent />
+      <div className="border-b h-16 fixed w-full mt-1 bg-background/80 backdrop-blur z-10">
         <div className="h-16 mx-auto max-w-[1024px] px-4 flex items-center justify-between">
           <Button asChild variant={"link"}>
-            <Link href={"/"}>Notenite</Link>
+            <Link href={"/"} className="font-semibold">
+              Notenite
+            </Link>
           </Button>
 
           <div className="flex items-center gap-4">
