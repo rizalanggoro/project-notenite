@@ -23,16 +23,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { EnumStateStatus } from "@/lib/core/enums/state-type";
-import { useAppDispatch, useAppSelector } from "@/lib/core/store/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { either } from "fp-ts";
 import { JWTPayload } from "jose";
 import { Loader2, Plus } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import * as slice from "./slice";
-import { useDashboardPosts } from "./store";
+import { StateType, useDashboardPosts } from "./store";
 
 type Props = {
   session: JWTPayload;
@@ -48,44 +45,23 @@ const schema = z.object({
 });
 
 export default function CreateNewPost(props: Props) {
+  const { type, status, createPost } = useDashboardPosts();
   const { toast } = useToast();
-  const dispatch = useAppDispatch();
+  const [isDialogCreatePostVisible, setIsDialogCreatePostVisible] =
+    useState(false);
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
   });
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
-    const userKey = props.session.key;
-    if (userKey) {
-      const res = await dispatch(
-        slice.actions.createPost({
-          ...values,
-          userKey: userKey as string,
-        })
-      );
-      if (either.isRight(res.payload as any)) {
-        dispatch(slice.actions.resetState());
-        form.reset();
-      }
-    }
+    const res = await createPost({ session: props.session, ...values });
+    if (res) form.reset();
   };
-
-  // const isDialogCreatePostShowed = useAppSelector(
-  //   (state) => state.dashboardPosts.isDialogCreatePostShowed
-  // );
-  const isTypeCreatePost = useAppSelector(
-    (state) => state.dashboardPosts.type == slice.StateType.createPost
-  );
-  const status = useAppSelector((state) => state.dashboardPosts.status);
-
-  const isDialogCreatePostVisible = useDashboardPosts(
-    (state) => state.isDialogCreatePostVisible
-  );
 
   // listen state changes
   useEffect(() => {
-    if (isTypeCreatePost) {
+    if (type == StateType.createPost) {
       if (
         status == EnumStateStatus.success ||
         status == EnumStateStatus.failure
@@ -100,15 +76,13 @@ export default function CreateNewPost(props: Props) {
         });
       }
     }
-  }, [isTypeCreatePost, status]);
+  }, [type, status]);
 
   return (
     <>
       <Dialog
         open={isDialogCreatePostVisible}
-        onOpenChange={(e) =>
-          useDashboardPosts.setState({ isDialogCreatePostVisible: e })
-        }
+        onOpenChange={(value) => setIsDialogCreatePostVisible(value)}
       >
         <DialogTrigger asChild>
           <Button size={"sm"}>
@@ -130,7 +104,10 @@ export default function CreateNewPost(props: Props) {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
-                disabled={isTypeCreatePost && status == EnumStateStatus.loading}
+                disabled={
+                  type == StateType.createPost &&
+                  status == EnumStateStatus.loading
+                }
                 control={form.control}
                 name="title"
                 render={({ field }) => (
@@ -144,7 +121,10 @@ export default function CreateNewPost(props: Props) {
                 )}
               />
               <FormField
-                disabled={isTypeCreatePost && status == EnumStateStatus.loading}
+                disabled={
+                  type == StateType.createPost &&
+                  status == EnumStateStatus.loading
+                }
                 control={form.control}
                 name="description"
                 render={({ field }) => (
@@ -165,20 +145,23 @@ export default function CreateNewPost(props: Props) {
                 <DialogClose
                   asChild
                   disabled={
-                    isTypeCreatePost && status == EnumStateStatus.loading
+                    type == StateType.createPost &&
+                    status == EnumStateStatus.loading
                   }
                 >
                   <Button variant={"secondary"}>Batal</Button>
                 </DialogClose>
                 <Button
                   disabled={
-                    isTypeCreatePost && status == EnumStateStatus.loading
+                    type == StateType.createPost &&
+                    status == EnumStateStatus.loading
                   }
                   type="submit"
                 >
-                  {isTypeCreatePost && status == EnumStateStatus.loading && (
-                    <Loader2 className="animate-spin w-4 h-4 mr-2" />
-                  )}
+                  {type == StateType.createPost &&
+                    status == EnumStateStatus.loading && (
+                      <Loader2 className="animate-spin w-4 h-4 mr-2" />
+                    )}
                   Selesai
                 </Button>
               </DialogFooter>

@@ -4,21 +4,20 @@ import Failure from "@/lib/core/failure";
 import ModelPost from "@/lib/data/models/post";
 import { providerDeta } from "@/lib/data/providers/deta";
 import { either } from "fp-ts";
-import { JWTPayload } from "jose";
 
 const failureServer: Failure = {
   message: "Terjadi kesalahan tak terduga pada server",
 };
 
 interface ReadAllProps {
-  session: JWTPayload;
+  userKey: string;
 }
 export const readAll = async (
   props: ReadAllProps
 ): Promise<either.Either<Failure, Array<ModelPost>>> => {
   const queryRes = await providerDeta.query({
     basename: "post",
-    payload: { query: [{ userKey: props.session.key }] },
+    payload: { query: [{ userKey: props.userKey }] },
   });
 
   if (!queryRes.ok) return either.left(failureServer);
