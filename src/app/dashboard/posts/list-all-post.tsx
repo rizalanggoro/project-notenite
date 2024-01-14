@@ -1,60 +1,56 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { StateStatus } from "@/lib/core/types/state-status";
-import ModelPost from "@/lib/data/models/post";
+import { EnumStateStatus } from "@/lib/core/enums/state-type";
+import { useAppDispatch, useAppSelector } from "@/lib/core/store/hooks";
 import { JWTPayload } from "jose";
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useEffect } from "react";
+import * as slice from "./slice";
 
 type Props = {
   session: JWTPayload;
 };
 
-type State = {
-  status: StateStatus;
-  posts: Array<ModelPost>;
-};
-
 export default function ListAllPosts(props: Props) {
-  const [state, setState] = useState<State>({
-    status: "initial",
-    posts: [],
-  });
-
-  const readAllPosts = async () => {
-    setState({ ...state, status: "loading" });
-
-    const response = await fetch("/api/dashboard/posts/read", {
-      method: "POST",
-      body: JSON.stringify({ userKey: props.session.key }),
-    });
-
-    if (response.ok) {
-      const json = await response.json();
-      return setState({ ...state, status: "success", posts: json });
-    }
-
-    return setState({ ...state, status: "failure" });
-  };
+  const dispatch = useAppDispatch();
+  const allMyPosts = useAppSelector((state) => state.dashboardPosts.allMyPosts);
+  const type = useAppSelector((state) => state.dashboardPosts.type);
+  const status = useAppSelector((state) => state.dashboardPosts.status);
 
   useEffect(() => {
-    readAllPosts();
-  }, []);
+    if (allMyPosts.length == 0) {
+      dispatch(slice.actions.readAll(props));
+    }
+  }, [allMyPosts]);
 
   return (
     <>
+      {type == slice.StateType.readAll && status == EnumStateStatus.loading && (
+        <p>Reading all my posts...</p>
+      )}
       <div className="flex flex-col gap-2">
-        {state.posts.map((item, index) => (
+        {allMyPosts.map((item, index) => (
           <Card key={"all-post-item-" + index}>
             <CardHeader>
               <CardTitle>{item.title}</CardTitle>
               <CardDescription>{item.description}</CardDescription>
             </CardHeader>
+            <CardContent className="flex gap-2">
+              <Button variant={"destructive"} size={"sm"}>
+                Hapus
+              </Button>
+              <Button size={"sm"} asChild>
+                <Link href={"/dashboard/posts/create/" + item.key}>Ubah</Link>
+              </Button>
+            </CardContent>
           </Card>
         ))}
       </div>

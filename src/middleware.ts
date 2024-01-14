@@ -12,7 +12,7 @@ const checkSession = async (): Promise<boolean> => {
 export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith("/dashboard")) {
     if (!(await checkSession()))
-      return NextResponse.redirect(new URL("/authentication", request.url));
+      return NextResponse.redirect(new URL("/auth/login", request.url));
     return NextResponse.next();
   } else {
     return NextResponse.next();

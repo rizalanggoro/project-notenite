@@ -3,9 +3,10 @@ import { repositoryPost } from "@/lib/data/repositories/post";
 
 export async function POST(request: Request) {
   try {
-    const { userKey } = await request.json();
+    const { userKey, last } = await request.json();
     const readResponse = await repositoryPost.read({
       userKey,
+      last,
     });
 
     if (!readResponse.ok) throw { code: FailureTypes.Server } as Failure;

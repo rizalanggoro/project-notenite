@@ -1,11 +1,15 @@
+import { StateStatus } from "@/lib/core/types/state-status";
 import { Level } from "@tiptap/extension-heading";
 import { Editor } from "@tiptap/react";
 import {
   Bold,
   Check,
   ChevronDown,
+  FileCheck2,
   Italic,
+  Loader2,
   Redo,
+  SaveAll,
   Table2,
   Underline,
   Undo,
@@ -25,13 +29,14 @@ import { Toggle } from "../ui/toggle";
 
 type Props = {
   editor: Editor;
+  autoSaveState?: StateStatus;
 };
 
-export default function ComponentTiptapToolbar({ editor }: Props) {
+export default function ComponentTiptapToolbar({ editor, ...props }: Props) {
   return (
     <>
       <Card className="sticky top-[5.25rem] bg-card z-10 p-2 border rounded-md my-4">
-        <div className="w-full flex items-center gap-0.5">
+        <div className="w-full flex items-center gap-0.5 flex-wrap">
           {/* text style */}
           <ComponentHistory editor={editor} />
           <Separator orientation="vertical" className="h-9" />
@@ -62,11 +67,47 @@ export default function ComponentTiptapToolbar({ editor }: Props) {
           </Toggle>
           <Separator orientation="vertical" className="h-9" />
           <ComponentTable editor={editor} />
+          {props.autoSaveState && (
+            <>
+              <Separator orientation="vertical" className="h-9" />
+              <ComponentAutoSaveStatus autoSaveState={props.autoSaveState} />
+            </>
+          )}
         </div>
       </Card>
     </>
   );
 }
+
+const ComponentAutoSaveStatus = ({
+  autoSaveState,
+}: {
+  autoSaveState: StateStatus;
+}) => {
+  const data: { [key: string]: { icon: React.ReactNode; title: string } } = {
+    initial: {
+      icon: <SaveAll className="w-4 h-4 mr-2" />,
+      title: "Otomatis",
+    },
+    loading: {
+      icon: <Loader2 className="w-4 h-4 mr-2 animate-spin" />,
+      title: "Menyimpan",
+    },
+    success: {
+      icon: <FileCheck2 className="w-4 h-4 mr-2" />,
+      title: "Tersimpan",
+    },
+  };
+
+  return (
+    <>
+      <Button size={"sm"} className="h-9" variant={"ghost"} disabled>
+        {data[autoSaveState as string].icon}
+        {data[autoSaveState as string].title}
+      </Button>
+    </>
+  );
+};
 
 const ComponentTable = ({ editor }: { editor: Editor }) => {
   return (
@@ -77,7 +118,7 @@ const ComponentTable = ({ editor }: { editor: Editor }) => {
         className="w-9 h-9"
         onClick={() => {
           if (editor.isActive("table")) {
-            console.log("cannot create table inside table!");
+            console.log("cannot [key] table inside table!");
             return;
           }
           editor.chain().focus().insertTable().run();

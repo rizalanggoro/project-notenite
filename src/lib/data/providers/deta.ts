@@ -16,6 +16,7 @@ const get = (props: GetProps): Promise<Response> => {
   return fetch(`${detaBaseUrl}/${props.basename}/items/${props.key}`, {
     method: "GET",
     headers: getHeaders(),
+    cache: "no-store",
   });
 };
 
@@ -30,6 +31,7 @@ const insert = (props: InsertProps) => {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify({ ...props.payload }),
+    cache: "no-store",
   });
 };
 
@@ -49,6 +51,7 @@ const update = (props: UpdateProps) => {
     method: "PATCH",
     headers: getHeaders(),
     body: JSON.stringify({ ...props.payload }),
+    cache: "no-store",
   });
 };
 
@@ -65,6 +68,7 @@ const query = (props: QueryProps) => {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify({ ...props.payload }),
+    cache: "no-store",
   });
 };
 

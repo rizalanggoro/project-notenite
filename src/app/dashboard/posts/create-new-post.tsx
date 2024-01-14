@@ -11,108 +11,104 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { StateStatus } from "@/lib/core/types/state-status";
-import ModelPost from "@/lib/data/models/post";
+import { EnumStateStatus } from "@/lib/core/enums/state-type";
+import { useAppDispatch, useAppSelector } from "@/lib/core/store/hooks";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { either } from "fp-ts";
 import { JWTPayload } from "jose";
 import { Loader2, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import * as slice from "./slice";
+import { useDashboardPosts } from "./store";
 
 type Props = {
   session: JWTPayload;
 };
 
-type State = {
-  status: StateStatus;
-  message: string;
-  dialogCreatePostOpen: boolean;
-};
+const schema = z.object({
+  title: z
+    .string({ required_error: "Judul diperlukan!" })
+    .min(1, { message: "Judul tidak boleh kosong!" }),
+  description: z
+    .string({ required_error: "Deskripsi diperlukan!" })
+    .min(1, { message: "Deskripsi tidak boleh kosong!" }),
+});
 
 export default function CreateNewPost(props: Props) {
   const { toast } = useToast();
+  const dispatch = useAppDispatch();
 
-  const [state, setState] = useState<State>({
-    status: "initial",
-    message: "",
-    dialogCreatePostOpen: false,
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
   });
 
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-  });
-
-  const createPost = async () => {
-    setState({ ...state, status: "loading" });
-
-    if (form.title.trim().length == 0)
-      return setState({
-        ...state,
-        status: "failure",
-        message: "Judul postingan tidak boleh kosong!",
-      });
-
-    if (form.description.trim().length == 0)
-      return setState({
-        ...state,
-        status: "failure",
-        message: "Deskripsi postingan tidak boleh kosong!",
-      });
-
-    const currentDate = new Date().getTime();
-
-    const response = await fetch("/api/dashboard/posts/create", {
-      method: "POST",
-      body: JSON.stringify({
-        title: form.title,
-        description: form.description,
-        userKey: props.session.key,
-        createdAt: currentDate,
-        updatedAt: currentDate,
-        visibility: "private",
-      } as ModelPost),
-    });
-
-    if (response.ok) {
-      return setState({
-        ...state,
-        status: "success",
-        dialogCreatePostOpen: false,
-      });
-    } else {
-      return setState({
-        ...state,
-        status: "failure",
-        message: "Terdapat kesalahan pada server! Silahkan coba lagi nanti",
-      });
+  const onSubmit = async (values: z.infer<typeof schema>) => {
+    const userKey = props.session.key;
+    if (userKey) {
+      const res = await dispatch(
+        slice.actions.createPost({
+          ...values,
+          userKey: userKey as string,
+        })
+      );
+      if (either.isRight(res.payload as any)) {
+        dispatch(slice.actions.resetState());
+        form.reset();
+      }
     }
   };
 
+  // const isDialogCreatePostShowed = useAppSelector(
+  //   (state) => state.dashboardPosts.isDialogCreatePostShowed
+  // );
+  const isTypeCreatePost = useAppSelector(
+    (state) => state.dashboardPosts.type == slice.StateType.createPost
+  );
+  const status = useAppSelector((state) => state.dashboardPosts.status);
+
+  const isDialogCreatePostVisible = useDashboardPosts(
+    (state) => state.isDialogCreatePostVisible
+  );
+
   // listen state changes
   useEffect(() => {
-    if (state.status == "failure")
-      toast({
-        title: "Terjadi kesalahan!",
-        description: state.message,
-        variant: "destructive",
-        duration: 3000,
-      });
-    else if (state.status == "success") {
-      toast({
-        title: "Berhasil!",
-        duration: 3000,
-      });
+    if (isTypeCreatePost) {
+      if (
+        status == EnumStateStatus.success ||
+        status == EnumStateStatus.failure
+      ) {
+        const isSuccess = status == EnumStateStatus.success;
+        toast({
+          title: isSuccess
+            ? "Berhasil membuat postingan!"
+            : "Gagal membuat postingan!",
+          duration: 3000,
+          variant: isSuccess ? "default" : "destructive",
+        });
+      }
     }
-  }, [state]);
+  }, [isTypeCreatePost, status]);
 
   return (
     <>
       <Dialog
-        open={state.dialogCreatePostOpen}
-        onOpenChange={(e) => setState({ ...state, dialogCreatePostOpen: e })}
+        open={isDialogCreatePostVisible}
+        onOpenChange={(e) =>
+          useDashboardPosts.setState({ isDialogCreatePostVisible: e })
+        }
       >
         <DialogTrigger asChild>
           <Button size={"sm"}>
@@ -131,45 +127,63 @@ export default function CreateNewPost(props: Props) {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex flex-col gap-2">
-            <div>
-              <Label htmlFor="create-post-input-title">Judul</Label>
-              <Input
-                id="create-post-input-title"
-                className="mt-2"
-                disabled={state.status == "loading"}
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                disabled={isTypeCreatePost && status == EnumStateStatus.loading}
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Judul</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="create-post-input-description">Deskripsi</Label>
-              <Textarea
-                id="create-post-input-description"
-                className="mt-2 resize-none min-h-32"
-                disabled={state.status == "loading"}
-                value={form.description}
-                onChange={(e) =>
-                  setForm({ ...form, description: e.target.value })
-                }
-              ></Textarea>
-            </div>
-          </div>
+              <FormField
+                disabled={isTypeCreatePost && status == EnumStateStatus.loading}
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Deskripsi</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        className="resize-none min-h-32"
+                      ></Textarea>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <DialogFooter>
-            <DialogClose asChild disabled={state.status == "loading"}>
-              <Button variant={"secondary"}>Batal</Button>
-            </DialogClose>
-            <Button
-              disabled={state.status == "loading"}
-              onClick={() => createPost()}
-            >
-              {state.status == "loading" && (
-                <Loader2 className="animate-spin w-4 h-4 mr-2" />
-              )}
-              Selesai
-            </Button>
-          </DialogFooter>
+              <DialogFooter>
+                <DialogClose
+                  asChild
+                  disabled={
+                    isTypeCreatePost && status == EnumStateStatus.loading
+                  }
+                >
+                  <Button variant={"secondary"}>Batal</Button>
+                </DialogClose>
+                <Button
+                  disabled={
+                    isTypeCreatePost && status == EnumStateStatus.loading
+                  }
+                  type="submit"
+                >
+                  {isTypeCreatePost && status == EnumStateStatus.loading && (
+                    <Loader2 className="animate-spin w-4 h-4 mr-2" />
+                  )}
+                  Selesai
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </>
