@@ -6,9 +6,14 @@ export default function Page() {
   return (
     <>
       <ComponentContainer>
-        <p className="text-3xl font-semibold my-8">
-          Daftar postingan untuk Anda baca
-        </p>
+        <div className="my-8 space-y-2">
+          <p className="text-3xl font-semibold">Daftar postingan</p>
+          <p className="text-muted-foreground">
+            Beberapa postingan yang dapat Anda baca untuk menambah wawasan dan
+            pengetahuan
+          </p>
+        </div>
+
         <SearchBox />
         <ListPosts />
       </ComponentContainer>
