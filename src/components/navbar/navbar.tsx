@@ -1,5 +1,5 @@
 import { repositorySession } from "@/lib/data/repositories/session";
-import { AtSign, Hash, LayoutDashboard, Menu } from "lucide-react";
+import { AtSign, Hash, LayoutDashboard, LogIn, Menu } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
@@ -109,12 +109,8 @@ export default async function ComponentNavbar() {
 
                 <div className="flex flex-col gap-2 my-4">
                   {menus.map((menu, index) => (
-                    <Link
-                      href={menu.href}
-                      key={"sm-menu-item-" + index}
-                      className="w-full"
-                    >
-                      <SheetClose>
+                    <SheetClose key={"sm-menu-item-" + index} asChild>
+                      <Link href={menu.href} className="w-full">
                         <Button
                           className="w-full justify-start px-0"
                           variant={"link"}
@@ -122,8 +118,8 @@ export default async function ComponentNavbar() {
                           {menu.icon}
                           {menu.title}
                         </Button>
-                      </SheetClose>
-                    </Link>
+                      </Link>
+                    </SheetClose>
                   ))}
                 </div>
 
@@ -135,12 +131,8 @@ export default async function ComponentNavbar() {
                     <p className="font-semibold my-4">Dasbor</p>
                     <div className="flex flex-col gap-2 my-4">
                       {authenticatedMenus.map((menu, index) => (
-                        <Link
-                          href={menu.href}
-                          key={"sm-menu-item-" + index}
-                          className="w-full"
-                        >
-                          <SheetClose>
+                        <SheetClose key={"sm-menu-item-" + index} asChild>
+                          <Link href={menu.href} className="w-full">
                             <Button
                               className="w-full justify-start px-0"
                               variant={"link"}
@@ -148,10 +140,37 @@ export default async function ComponentNavbar() {
                               {menu.icon}
                               {menu.title}
                             </Button>
-                          </SheetClose>
-                        </Link>
+                          </Link>
+                        </SheetClose>
                       ))}
                     </div>
+                  </>
+                )}
+
+                {!session && (
+                  <>
+                    <Separator orientation="horizontal" className="my-2" />
+
+                    {/* dashboard menus */}
+                    <p className="my-4 text-muted-foreground">
+                      Silahkan masuk atau registrasi untuk dapat mengakses menu
+                      dasbor
+                    </p>
+                    <SheetClose
+                      key={"sm-menu-item-login"}
+                      className="mb-4"
+                      asChild
+                    >
+                      <Link href={"/auth/login"} className="w-full">
+                        <Button
+                          className="w-full justify-start px-0"
+                          variant={"link"}
+                        >
+                          <LogIn className="w-4 h-4 mr-2" />
+                          Masuk
+                        </Button>
+                      </Link>
+                    </SheetClose>
                   </>
                 )}
               </SheetContent>

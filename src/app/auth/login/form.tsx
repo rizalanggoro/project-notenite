@@ -161,7 +161,7 @@ export default function LoginForm() {
               />
             </CardContent>
 
-            <CardFooter className="flex flex-col justify-center gap-2">
+            <CardFooter className="flex flex-col justify-center gap-4">
               <Button
                 disabled={state.status == "loading"}
                 className="w-full"
