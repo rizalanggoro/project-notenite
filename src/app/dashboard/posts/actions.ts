@@ -56,3 +56,21 @@ export const createPost = async (
 
   return either.right(newPost);
 };
+
+interface DeletePostProps {
+  key: string;
+}
+export const deletePost = async (
+  props: DeletePostProps
+): Promise<either.Either<Failure, boolean>> => {
+  try {
+    const deleteRes = await providerDeta.delete({
+      basename: "post",
+      key: props.key,
+    });
+
+    return either.right(deleteRes.ok);
+  } catch (e) {
+    return either.left(failureServer);
+  }
+};

@@ -9,6 +9,7 @@ export const enum StateType {
   initial,
   readAll,
   createPost,
+  deletePost,
 }
 
 interface State {
@@ -33,9 +34,10 @@ interface Actions {
     title: string;
     description: string;
   }) => Promise<boolean>;
+  deletePost: (props: { key: string }) => Promise<boolean>;
 }
 
-export const useDashboardPosts = create<State & Actions>()((set) => ({
+export const useDashboardPosts = create<State & Actions>()((set, get) => ({
   ...initialState,
 
   // actions
@@ -84,6 +86,24 @@ export const useDashboardPosts = create<State & Actions>()((set) => ({
         }));
         return true;
       }
+    }
+
+    return false;
+  },
+
+  deletePost: async (props) => {
+    set({ type: StateType.deletePost, status: EnumStateStatus.loading });
+
+    const res = await serverActions.deletePost(props);
+    if (either.isLeft(res)) {
+      set({ type: StateType.deletePost, status: EnumStateStatus.failure });
+    } else {
+      set((state) => ({
+        type: StateType.deletePost,
+        status: EnumStateStatus.success,
+        posts: state.posts.filter((post) => post.key != props.key),
+      }));
+      return true;
     }
 
     return false;

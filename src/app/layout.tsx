@@ -4,7 +4,6 @@ import { repositorySession } from "@/lib/data/repositories/session";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.scss";
-import StoreProvider from "./store-provider";
 import { ThemeProvider } from "./theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -24,18 +23,16 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <StoreProvider session={session}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <ComponentNavbar />
-            {children}
-            <Toaster />
-          </ThemeProvider>
-        </StoreProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ComponentNavbar />
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

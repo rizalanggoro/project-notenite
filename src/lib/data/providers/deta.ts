@@ -72,4 +72,16 @@ const query = (props: QueryProps) => {
   });
 };
 
-export const providerDeta = { get, insert, update, query };
+interface DeleteProps {
+  basename: string;
+  key: string;
+}
+const $delete = (props: DeleteProps) => {
+  return fetch(`${detaBaseUrl}/${props.basename}/items/${props.key}`, {
+    method: "DELETE",
+    headers: getHeaders(),
+    cache: "no-store",
+  });
+};
+
+export const providerDeta = { get, insert, update, query, delete: $delete };
