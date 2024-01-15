@@ -27,7 +27,7 @@ const initialState: State = {
 };
 
 interface Actions {
-  reset: () => void;
+  resetToInitial: () => void;
   readAll: (props: { session: JWTPayload }) => Promise<void>;
   createPost: (props: {
     session: JWTPayload;
@@ -41,11 +41,15 @@ export const useDashboardPosts = create<State & Actions>()((set, get) => ({
   ...initialState,
 
   // actions
-  reset: () => {
-    set((state) => ({
-      ...initialState,
-      posts: state.posts,
-    }));
+  resetToInitial: () => {
+    setTimeout(
+      () =>
+        set({
+          type: StateType.initial,
+          status: EnumStateStatus.initial,
+        }),
+      0
+    );
   },
 
   readAll: async ({ session }) => {
@@ -63,11 +67,14 @@ export const useDashboardPosts = create<State & Actions>()((set, get) => ({
           posts: res.right,
         });
       }
+
+      get().resetToInitial();
     }
   },
 
   createPost: async (props) => {
     const userKey = props.session.key;
+    let isSuccess = false;
     if (userKey) {
       set({ type: StateType.createPost, status: EnumStateStatus.loading });
 
@@ -79,33 +86,37 @@ export const useDashboardPosts = create<State & Actions>()((set, get) => ({
       if (either.isLeft(res)) {
         set({ type: StateType.createPost, status: EnumStateStatus.failure });
       } else {
+        isSuccess = true;
         set((state) => ({
           type: StateType.createPost,
           status: EnumStateStatus.success,
-          posts: [...state.posts, res.right],
+          posts: [res.right, ...state.posts],
         }));
-        return true;
       }
+
+      get().resetToInitial();
     }
 
-    return false;
+    return isSuccess;
   },
 
   deletePost: async (props) => {
+    let isSuccess = false;
     set({ type: StateType.deletePost, status: EnumStateStatus.loading });
 
     const res = await serverActions.deletePost(props);
     if (either.isLeft(res)) {
       set({ type: StateType.deletePost, status: EnumStateStatus.failure });
     } else {
+      isSuccess = true;
       set((state) => ({
         type: StateType.deletePost,
         status: EnumStateStatus.success,
         posts: state.posts.filter((post) => post.key != props.key),
       }));
-      return true;
     }
 
-    return false;
+    get().resetToInitial();
+    return isSuccess;
   },
 }));

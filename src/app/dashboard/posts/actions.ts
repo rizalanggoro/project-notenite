@@ -17,7 +17,10 @@ export const readAll = async (
 ): Promise<either.Either<Failure, Array<ModelPost>>> => {
   const queryRes = await providerDeta.query({
     basename: "post",
-    payload: { query: [{ userKey: props.userKey }] },
+    payload: {
+      query: [{ userKey: props.userKey }],
+      sort: "desc",
+    },
   });
 
   if (!queryRes.ok) return either.left(failureServer);

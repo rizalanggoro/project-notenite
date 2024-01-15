@@ -56,7 +56,10 @@ export default function CreateNewPost(props: Props) {
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
     const res = await createPost({ session: props.session, ...values });
-    if (res) form.reset();
+    if (res) {
+      setIsDialogCreatePostVisible(false);
+      form.reset();
+    }
   };
 
   // listen state changes

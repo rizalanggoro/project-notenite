@@ -8,10 +8,10 @@ const getHeaders = (): Headers => {
   return headers;
 };
 
-type GetProps = {
+interface GetProps {
   basename: string;
   key: string;
-};
+}
 const get = (props: GetProps): Promise<Response> => {
   return fetch(`${detaBaseUrl}/${props.basename}/items/${props.key}`, {
     method: "GET",
@@ -20,12 +20,12 @@ const get = (props: GetProps): Promise<Response> => {
   });
 };
 
-type InsertProps = {
+interface InsertProps {
   basename: string;
   payload: {
     item: Object;
   };
-};
+}
 const insert = (props: InsertProps) => {
   return fetch(`${detaBaseUrl}/${props.basename}/items`, {
     method: "POST",
@@ -35,7 +35,7 @@ const insert = (props: InsertProps) => {
   });
 };
 
-type UpdateProps = {
+interface UpdateProps {
   basename: string;
   key: string;
   payload: {
@@ -45,7 +45,7 @@ type UpdateProps = {
     prepend?: Object;
     delete?: Object;
   };
-};
+}
 const update = (props: UpdateProps) => {
   return fetch(`${detaBaseUrl}/${props.basename}/items/${props.key}`, {
     method: "PATCH",
@@ -55,14 +55,15 @@ const update = (props: UpdateProps) => {
   });
 };
 
-type QueryProps = {
+interface QueryProps {
   basename: string;
   payload: {
     query?: Array<Object>;
     limit?: number;
     last?: string;
+    sort?: string;
   };
-};
+}
 const query = (props: QueryProps) => {
   return fetch(`${detaBaseUrl}/${props.basename}/query`, {
     method: "POST",

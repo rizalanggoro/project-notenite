@@ -84,14 +84,16 @@ export default function ListPosts(props: Props) {
                       return (
                         <Card key={"all-post-item-" + index}>
                           <CardHeader className="flex flex-row justify-between">
-                            <div className="space-y-1.5">
+                            <div className="space-y-1.5 flex-1">
                               <Badge
                                 className="w-fit uppercase mb-2"
                                 variant={"secondary"}
                               >
                                 {item.visibility}
                               </Badge>
-                              <CardTitle>{item.title}</CardTitle>
+                              <CardTitle className="leading-normal">
+                                {item.title}
+                              </CardTitle>
                               <CardDescription>
                                 {item.description}
                               </CardDescription>
