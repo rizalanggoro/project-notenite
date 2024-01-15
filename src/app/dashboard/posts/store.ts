@@ -37,7 +37,7 @@ interface Actions {
   deletePost: (props: { key: string }) => Promise<boolean>;
 }
 
-export const useDashboardPosts = create<State & Actions>()((set, get) => ({
+export const useStoreDashboardPosts = create<State & Actions>()((set, get) => ({
   ...initialState,
 
   // actions

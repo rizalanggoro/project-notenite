@@ -29,7 +29,7 @@ import { Loader2, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { StateType, useDashboardPosts } from "./store";
+import { StateType, useStoreDashboardPosts } from "./store";
 
 type Props = {
   session: JWTPayload;
@@ -45,7 +45,7 @@ const schema = z.object({
 });
 
 export default function CreateNewPost(props: Props) {
-  const { type, status, createPost } = useDashboardPosts();
+  const { type, status, createPost } = useStoreDashboardPosts();
   const { toast } = useToast();
   const [isDialogCreatePostVisible, setIsDialogCreatePostVisible] =
     useState(false);

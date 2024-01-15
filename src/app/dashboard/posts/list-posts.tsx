@@ -33,14 +33,14 @@ import { JWTPayload } from "jose";
 import { Info, Loader2, MoreVertical, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { StateType, useDashboardPosts } from "./store";
+import { StateType, useStoreDashboardPosts } from "./store";
 
 type Props = {
   session: JWTPayload;
 };
 
 export default function ListPosts(props: Props) {
-  const { type, status, posts, readAll, deletePost } = useDashboardPosts();
+  const { type, status, posts, readAll, deletePost } = useStoreDashboardPosts();
   const [isDialogOptionVisible, setIsDialogOptionVisible] = useState(false);
   const [dialogOptionData, setDialogOptionData] = useState<{
     type: "update" | "delete";
