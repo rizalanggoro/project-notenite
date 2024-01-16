@@ -36,7 +36,7 @@ export default function Content(props: Props) {
       <div
         ref={contentRef}
         dangerouslySetInnerHTML={{ __html: content }}
-        className="prose dark:prose-invert"
+        className="prose dark:prose-invert max-w-full"
       ></div>
     </>
   );

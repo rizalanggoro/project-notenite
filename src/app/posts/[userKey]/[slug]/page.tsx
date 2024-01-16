@@ -30,6 +30,8 @@ export default async function Page(props: Props) {
 
   if (!content) return <></>;
 
+  console.log(content);
+
   const contentHTML = generateHTML(
     JSON.parse(content),
     ConfigTiptap.extensions
