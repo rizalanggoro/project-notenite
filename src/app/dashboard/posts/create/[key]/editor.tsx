@@ -2,16 +2,10 @@
 
 import ComponentTiptapEditor from "@/components/tiptap/editor";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import MathExtension from "@/lib/core/tiptap-extensions/math";
+import { ConfigTiptap } from "@/lib/core/configs/tiptap";
 import { StateStatus } from "@/lib/core/types/state-status";
 import ModelPost from "@/lib/data/models/post";
-import TableExtension from "@tiptap/extension-table";
-import TableCellExtension from "@tiptap/extension-table-cell";
-import TableHeaderExtension from "@tiptap/extension-table-header";
-import TableRowExtension from "@tiptap/extension-table-row";
-import UnderlineExtension from "@tiptap/extension-underline";
 import { useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
@@ -31,39 +25,7 @@ export default function DashboardPostCreateEditor(props: Props) {
   });
 
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3, 4],
-          HTMLAttributes: {
-            class: "tiptap-editor-heading",
-          },
-        },
-      }),
-      UnderlineExtension,
-      MathExtension,
-      TableExtension.configure({
-        resizable: false,
-        HTMLAttributes: {
-          class: "tiptap-editor-table",
-        },
-      }),
-      TableCellExtension.configure({
-        HTMLAttributes: {
-          class: "tiptap-editor-table-cell",
-        },
-      }),
-      TableHeaderExtension.configure({
-        HTMLAttributes: {
-          class: "tiptap-editor-table-header",
-        },
-      }),
-      TableRowExtension.configure({
-        HTMLAttributes: {
-          class: "tiptap-editor-table-row",
-        },
-      }),
-    ],
+    extensions: ConfigTiptap.extensions,
     content: props.post.content ? JSON.parse(props.post.content) : "",
     editorProps: {
       attributes: {

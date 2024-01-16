@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 import { useEffect } from "react";
 import { useStorePosts } from "./store";
 
@@ -34,10 +35,12 @@ export default function ListPosts() {
             </CardHeader>
 
             <CardFooter>
-              <Button variant={"link"} className="px-0">
-                Baca selengkapnya
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
+              <Link href={`/posts/${post.userKey}/${post.key}`}>
+                <Button variant={"link"} className="px-0">
+                  Baca selengkapnya
+                  <ChevronRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
             </CardFooter>
           </Card>
         ))}

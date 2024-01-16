@@ -15,7 +15,7 @@ export default function DashboardLayout(props: Props) {
   return (
     <>
       <ComponentContainer variant="max">
-        <div className="px-4 max-w-[1024px] mx-auto grid grid-cols-12 gap-4">
+        <div className="grid grid-cols-12 gap-4">
           {isPagePostCreate || (
             <div className="col-span-4 hidden md:block">
               <DashboardSidebar />

@@ -20,33 +20,33 @@ type MenuItem = {
   href: string;
 };
 
+const menus: Array<MenuItem> = [
+  {
+    icon: <Hash className="w-4 h-4 mr-2" />,
+    title: "Postingan",
+    href: "/posts",
+  },
+];
+
+const authenticatedMenus: Array<MenuItem> = [
+  {
+    icon: <LayoutDashboard className="w-4 h-4 mr-2" />,
+    title: "Ringkasan",
+    href: "/dashboard",
+  },
+  {
+    icon: <AtSign className="w-4 h-4 mr-2" />,
+    title: "Akun saya",
+    href: "/dashboard/account",
+  },
+  {
+    icon: <Hash className="w-4 h-4 mr-2" />,
+    title: "Postingan saya",
+    href: "/dashboard/posts",
+  },
+];
+
 export default async function ComponentNavbar() {
-  const menus: Array<MenuItem> = [
-    {
-      icon: <Hash className="w-4 h-4 mr-2" />,
-      title: "Posts",
-      href: "/posts",
-    },
-  ];
-
-  const authenticatedMenus: Array<MenuItem> = [
-    {
-      icon: <LayoutDashboard className="w-4 h-4 mr-2" />,
-      title: "Ringkasan",
-      href: "/dashboard",
-    },
-    {
-      icon: <AtSign className="w-4 h-4 mr-2" />,
-      title: "Akun saya",
-      href: "/dashboard/account",
-    },
-    {
-      icon: <Hash className="w-4 h-4 mr-2" />,
-      title: "Postingan saya",
-      href: "/dashboard/posts",
-    },
-  ];
-
   const session = await repositorySession.read();
 
   return (
@@ -56,7 +56,7 @@ export default async function ComponentNavbar() {
       {/* navbar */}
       <div className="border-b h-16 fixed w-full mt-1 bg-background/80 backdrop-blur z-10">
         <div className="h-16 mx-auto max-w-[1024px] px-4 flex items-center justify-between">
-          <Button asChild variant={"link"}>
+          <Button asChild variant={"link"} className="px-0">
             <Link href={"/"} className="font-semibold">
               Notenite
             </Link>
