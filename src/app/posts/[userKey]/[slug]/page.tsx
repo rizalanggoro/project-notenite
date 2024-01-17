@@ -14,11 +14,6 @@ interface Props {
   };
 }
 
-interface ContentItem {
-  type: string;
-  content: Array<{ type: string }>;
-}
-
 export default async function Page(props: Props) {
   const res = await serverActions.readPost({
     ...props.params,
@@ -26,11 +21,14 @@ export default async function Page(props: Props) {
 
   if (either.isLeft(res)) return notFound();
   const post = res.right;
+
   const content = post.content;
-
-  if (!content) return <></>;
-
-  console.log(content);
+  if (!content)
+    return (
+      <>
+        <p>Content not found!</p>
+      </>
+    );
 
   const contentHTML = generateHTML(
     JSON.parse(content),
